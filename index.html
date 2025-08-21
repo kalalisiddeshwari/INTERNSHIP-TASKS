@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS & JS Advanced Tasks</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    nav { background: #222; padding: 12px; text-align: center; }
+    nav button {
+      background: #444; color: white; border: none;
+      padding: 10px 20px; margin: 5px; cursor: pointer;
+      border-radius: 5px;
+    }
+    nav button:hover { background: #666; }
+
+    section { display: none; padding: 20px; }
+    section.active { display: block; }
+
+    /* Responsive Design */
+    .container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .box {
+      background: #0077cc; color: white; padding: 30px;
+      border-radius: 10px; text-align: center;
+      font-size: 20px;
+    }
+    @media (max-width: 768px) {
+      .container { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    /* Quiz */
+    .quiz-container {
+      max-width: 500px; margin: auto; text-align: center;
+      border: 1px solid #ddd; padding: 20px; border-radius: 8px;
+    }
+    .quiz-container button {
+      display: block; margin: 10px auto; padding: 10px;
+      width: 100%; border: none; background: #28a745;
+      color: white; border-radius: 5px; cursor: pointer;
+    }
+    .quiz-container button:hover { background: #218838; }
+
+    /* API Section */
+    .joke-box {
+      text-align: center; max-width: 600px; margin: auto;
+    }
+    .joke-box button {
+      background: #ff6600; border: none; padding: 10px 20px;
+      color: white; border-radius: 5px; cursor: pointer;
+    }
+    .joke-box button:hover { background: #e65c00; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <button onclick="showSection('responsive')">Responsive Design</button>
+    <button onclick="showSection('quiz')">Quiz</button>
+    <button onclick="showSection('api')">API Fetch</button>
+  </nav>
+
+  <!-- Responsive Section -->
+  <section id="responsive" class="active">
+    <h2>Responsive Design Example</h2>
+    <div class="container">
+      <div class="box">Box 1</div>
+      <div class="box">Box 2</div>
+      <div class="box">Box 3</div>
+    </div>
+    <p>Resize the window to see layout change!</p>
+  </section>
+
+  <!-- Quiz Section -->
+  <section id="quiz">
+    <div class="quiz-container">
+      <h2>Simple Quiz</h2>
+      <p id="question"></p>
+      <div id="answers"></div>
+    </div>
+  </section>
+
+  <!-- API Section -->
+  <section id="api">
+    <div class="joke-box">
+      <h2>Random Joke Generator 😂</h2>
+      <p id="joke">Click the button to load a joke!</p>
+      <button onclick="getJoke()">Get Joke</button>
+    </div>
+  </section>
+
+  <script>
+    // Section switch
+    function showSection(id) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    // Quiz
+    const quizData = [
+      { question: "Which language runs in a web browser?", answers: ["Python", "C++", "JavaScript"], correct: "JavaScript" },
+      { question: "What does CSS stand for?", answers: ["Cascading Style Sheets", "Colorful Style System", "Computer Style Syntax"], correct: "Cascading Style Sheets" },
+      { question: "What year was JavaScript created?", answers: ["1995", "2000", "1989"], correct: "1995" }
+    ];
+    let current = 0, score = 0;
+    const qElement = document.getElementById("question");
+    const aContainer = document.getElementById("answers");
+
+    function loadQuiz() {
+      if (current < quizData.length) {
+        qElement.textContent = quizData[current].question;
+        aContainer.innerHTML = "";
+        quizData[current].answers.forEach(ans => {
+          const btn = document.createElement("button");
+          btn.textContent = ans;
+          btn.onclick = () => {
+            if (ans === quizData[current].correct) score++;
+            current++;
+            loadQuiz();
+          };
+          aContainer.appendChild(btn);
+        });
+      } else {
+        qElement.textContent = `Quiz Over! Your Score: ${score}/${quizData.length}`;
+        aContainer.innerHTML = "";
+      }
+    }
+    loadQuiz();
+
+    // API Fetch Joke
+    async function getJoke() {
+      let res = await fetch("https://official-joke-api.appspot.com/random_joke");
+      let data = await res.json();
+      document.getElementById("joke").textContent = `${data.setup} - ${data.punchline}`;
+    }
+  </script>
+</body>
+</html>
