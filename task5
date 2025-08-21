@@ -1,0 +1,437 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Capstone Web App — Shop + Cart + Blog</title>
+<meta name="description" content="Single-file ecommerce demo with filters, cart, lazy images, responsive UI.">
+<style>
+/* ====== MINI RESET ====== */
+*{box-sizing:border-box}html,body{margin:0;padding:0}img{max-width:100%;display:block}button{cursor:pointer}
+/* ====== THEME (minimal, fast) ====== */
+:root{--bg:#0b0c10;--panel:#17181f;--muted:#2a2d3a;--text:#eef2ff;--sub:#bbc3d8;--brand:#7c5cff;--ok:#2bc48a;--warn:#ffb020}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+a{color:var(--brand);text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:16px}
+header{position:sticky;top:0;z-index:50;background:rgba(11,12,16,.8);backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid #242633}
+nav{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0}
+.logo{font-weight:800;letter-spacing:.5px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--muted);background:transparent;color:var(--text);padding:8px 12px;border-radius:999px}
+.tab[aria-current="page"],.tab:focus-visible{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(124,92,255,.25)}
+main>section{display:none;padding:16px 0}
+main>section.active{display:block}
+/* ====== HERO ====== */
+.hero{display:grid;gap:12px;grid-template-columns:1fr;align-items:center;background:linear-gradient(180deg,#12131a,transparent);padding:24px;border:1px solid var(--muted);border-radius:20px}
+.hero h1{font-size:clamp(22px,3vw,36px);margin:0}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--brand);background:var(--brand);color:#fff;padding:10px 14px;border-radius:12px}
+.btn.alt{background:transparent;color:var(--text);border-color:var(--muted)}
+.badge{font-size:12px;background:#1f2130;border:1px solid var(--muted);padding:4px 8px;border-radius:999px;color:var(--sub)}
+/* ====== GRID / CARDS ====== */
+.grid{display:grid;gap:12px}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:1024px){.grid.cols-4{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:768px){.grid.cols-3,.grid.cols-4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--muted);border-radius:16px;overflow:hidden}
+.card .pad{padding:12px}
+/* ====== SHOP CONTROLS ====== */
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.input,select{background:#0f1118;color:var(--text);border:1px solid var(--muted);border-radius:10px;padding:10px 12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--muted);padding:6px 10px;border-radius:999px;background:#0f1118}
+.pills{display:flex;gap:6px;align-items:center}
+.pill{padding:6px 10px;border-radius:999px;border:1px dashed var(--muted);color:var(--sub)}
+/* ====== PRODUCT CARD ====== */
+.product .meta{display:flex;justify-content:space-between;align-items:center;color:var(--sub);font-size:13px;margin:6px 0}
+.price{font-weight:700}
+.rating{font-size:12px}
+.actions{display:flex;gap:8px}
+.small{font-size:12px}
+/* ====== CART ====== */
+.cart-row{display:grid;grid-template-columns:64px 1fr auto auto;gap:8px;align-items:center}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--muted);border-radius:8px;overflow:hidden}
+.qty button{background:#0f1118;border:0;padding:6px 10px}
+.qty input{width:42px;text-align:center;background:#0f1118;color:var(--text);border:0;padding:6px 4px}
+.total{display:flex;justify-content:flex-end;gap:16px;align-items:center;padding:8px 0;border-top:1px solid var(--muted);margin-top:8px}
+/* ====== BLOG ====== */
+.post{display:grid;gap:6px}
+.post h3{margin:0}
+/* ====== FOOTER ====== */
+footer{color:var(--sub);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;padding:16px 0;border-top:1px solid var(--muted);margin-top:24px}
+/* ====== ACCESSIBILITY / PREFERS ====== */
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto} .fade{animation:none}}
+/* Tiny helpers */
+.hide{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <nav>
+      <div class="logo">🛍️ Capstone Store</div>
+      <div class="tabs" role="tablist" aria-label="Main">
+        <button class="tab" role="tab" aria-controls="home" aria-current="page" onclick="route('home')">Home</button>
+        <button class="tab" role="tab" aria-controls="shop" onclick="route('shop')">Shop</button>
+        <button class="tab" role="tab" aria-controls="cart" onclick="route('cart')">Cart <span id="cartCount" class="badge">0</span></button>
+        <button class="tab" role="tab" aria-controls="blog" onclick="route('blog')">Blog</button>
+        <button class="tab" role="tab" aria-controls="contact" onclick="route('contact')">Contact</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="container" id="app">
+  <!-- HOME -->
+  <section id="home" class="active" role="tabpanel" aria-labelledby="Home">
+    <div class="hero">
+      <div>
+        <span class="badge">Single-file • Offline-friendly • Fast</span>
+        <h1>Build & Ship Faster with a Lightweight, Responsive Web App</h1>
+        <p class="sub">Search, filter, sort products, add to cart (saved in your browser), read blog posts, and contact us—no backend required.</p>
+        <div class="cta">
+          <a class="btn" href="#shop" onclick="route('shop')">Start Shopping</a>
+          <a class="btn alt" href="#blog" onclick="route('blog')">Read the Blog</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP -->
+  <section id="shop" role="tabpanel">
+    <h2>Shop</h2>
+    <div class="controls">
+      <input id="q" class="input" type="search" placeholder="Search products…" aria-label="Search" oninput="renderProducts()">
+      <select id="cat" onchange="renderProducts()" aria-label="Category">
+        <option value="all">All Categories</option>
+        <option value="electronics">Electronics</option>
+        <option value="apparel">Apparel</option>
+        <option value="home">Home</option>
+      </select>
+      <select id="sort" onchange="renderProducts()" aria-label="Sort">
+        <option value="featured">Featured</option>
+        <option value="priceAsc">Price ↑</option>
+        <option value="priceDesc">Price ↓</option>
+        <option value="ratingDesc">Rating ↓</option>
+      </select>
+      <div class="pills"><span class="pill small">Lazy images</span><span class="pill small">LocalStorage</span><span class="pill small">No CDN</span></div>
+    </div>
+    <div id="products" class="grid cols-4" aria-live="polite"></div>
+    <div id="pager" class="controls"></div>
+  </section>
+
+  <!-- CART -->
+  <section id="cart" role="tabpanel">
+    <h2>Your Cart</h2>
+    <div id="cartList" class="grid" style="gap:12px"></div>
+    <div class="total">
+      <strong>Total:</strong><span id="cartTotal">$0.00</span>
+      <button class="btn" onclick="checkout()">Checkout</button>
+    </div>
+  </section>
+
+  <!-- BLOG -->
+  <section id="blog" role="tabpanel">
+    <h2>Blog</h2>
+    <div class="grid cols-2" id="posts"></div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" role="tabpanel">
+    <h2>Contact</h2>
+    <div class="card">
+      <form class="pad" onsubmit="event.preventDefault();alert('Message sent (demo).'); this.reset();">
+        <div class="grid cols-2">
+          <label> Name<input required class="input" type="text" placeholder="Your name"></label>
+          <label> Email<input required class="input" type="email" placeholder="you@example.com"></label>
+        </div>
+        <label> Message<textarea required class="input" rows="4" placeholder="How can we help?"></textarea></label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="consent" type="checkbox" required> <label for="consent" class="small">I agree to the demo terms.</label>
+        </div>
+        <div style="margin-top:8px"><button class="btn" type="submit">Send</button> <span class="small" style="color:var(--sub)">No network requests—demo only.</span></div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="container">
+  <div>© <span id="year"></span> Capstone Store</div>
+  <div class="small">Built with HTML, CSS, JS (single file). Test on Chrome • Firefox • Safari • Mobile.</div>
+</footer>
+
+<script>
+/*! ====== DATA (single source of truth) ====== */
+const PRODUCTS=[ // images are inline SVGs (no HTTP fetch)
+  {id:"p1",name:"Aurora Headphones",cat:"electronics",price:79.99,rating:4.6,img:"#A77"},
+  {id:"p2",name:"Nimbus Keyboard",cat:"electronics",price:59.5,rating:4.4,img:"#7A7"},
+  {id:"p3",name:"Cloud Tee",cat:"apparel",price:18.0,rating:4.2,img:"#77A"},
+  {id:"p4",name:"Breeze Hoodie",cat:"apparel",price:42.0,rating:4.5,img:"#AA7"},
+  {id:"p5",name:"Ceramic Mug",cat:"home",price:12.99,rating:4.1,img:"#A7A"},
+  {id:"p6",name:"Desk Lamp",cat:"home",price:24.5,rating:4.3,img:"#7AA"},
+  {id:"p7",name:"Pocket Speaker",cat:"electronics",price:35.0,rating:4.0,img:"#A55"},
+  {id:"p8",name:"Canvas Tote",cat:"apparel",price:15.0,rating:4.1,img:"#5A5"},
+  {id:"p9",name:"Throw Pillow",cat:"home",price:19.25,rating:4.4,img:"#55A"},
+  {id:"p10",name:"Trail Watch",cat:"electronics",price:99.0,rating:4.7,img:"#5AA"},
+  {id:"p11",name:"Luma Monitor 24\"",cat:"electronics",price:149.0,rating:4.5,img:"#AA5"},
+  {id:"p12",name:"Soft Blanket",cat:"home",price:28.0,rating:4.6,img:"#5AA"}
+];
+const BLOG=[{title:"Performance First: Ship Fast UIs",t:"Minimize requests, inline critical CSS, lazy load media, and defer non-critical JS to deliver first paint quickly."},
+            {title:"Mobile-First Grid Layouts",t:"Design for small screens first, then enhance with CSS grid breakpoints for tablets and desktops."},
+            {title:"LocalStorage Patterns",t:"Keep a single key for your cart or settings, and always guard against JSON parsing errors."}];
+/*! ====== STATE ====== */
+const state={
+  route:"home",
+  cart:loadCart(),
+  page:1,perPage:8, // pagination
+  search:"",cat:"all",sort:"featured"
+};
+/*! ====== UTIL ====== */
+function $(sel,root=document){return root.querySelector(sel)}
+function $all(sel,root=document){return [...root.querySelectorAll(sel)]}
+function money(n){return "$"+n.toFixed(2)}
+function svgPlaceholder(hex="#777"){ // tiny inline SVG as data URI
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600'><rect width='100%' height='100%' fill='${hex}'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='42' fill='white'>Image</text></svg>`;
+  return "data:image/svg+xml;utf8,"+encodeURIComponent(svg);
+}
+/*! ====== ROUTER (hash-less tabs) ====== */
+function route(name){
+  state.route=name;
+  $all("main>section").forEach(s=>s.classList.remove("active"));
+  $("#"+name).classList.add("active");
+  // update tabs aria-current
+  $all(".tab").forEach(b=>b.setAttribute("aria-current", b.getAttribute("aria-controls")===name ? "page" : "false"));
+  // focus management
+  $("#"+name).setAttribute("tabindex","-1"); $("#"+name).focus({preventScroll:true});
+  if(name==="cart") renderCart();
+  if(name==="shop") { renderProducts(); }
+  history.replaceState(null,"","#"+name); // deep-link
+}
+window.addEventListener("load",()=>{const h=location.hash.slice(1); if(["home","shop","cart","blog","contact"].includes(h)) route(h); $("#year").textContent=new Date().getFullYear(); renderProducts(); renderPosts(); updateCartCount();});
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1); if(h) route(h);});
+/*! ====== SHOP RENDER ====== */
+function readControls(){
+  state.search=$("#q").value.trim().toLowerCase();
+  state.cat=$("#cat").value;
+  state.sort=$("#sort").value;
+}
+function sortBy(arr,mode){
+  if(mode==="priceAsc") return arr.sort((a,b)=>a.price-b.price);
+  if(mode==="priceDesc")return arr.sort((a,b)=>b.price-a.price);
+  if(mode==="ratingDesc")return arr.sort((a,b)=>b.rating-a.rating);
+  return arr; // featured
+}
+function paginate(arr,page,per){const start=(page-1)*per; return arr.slice(start,start+per)}
+function renderProducts(){
+  readControls();
+  let items=PRODUCTS.filter(p=>{
+    const matchesQ=state.search? (p.name.toLowerCase().includes(state.search) || p.cat.includes(state.search)):true;
+    const matchesC=state.cat==="all"||p.cat===state.cat;
+    return matchesQ && matchesC;
+  });
+  items=sortBy(items,state.sort);
+  const total=items.length, pages=Math.max(1,Math.ceil(total/state.perPage));
+  if(state.page>pages) state.page=1;
+  const pageItems=paginate(items,state.page,state.perPage);
+  const list=$("#products"); list.innerHTML="";
+  pageItems.forEach(p=>{
+    const card=document.createElement("article"); card.className="card product";
+    card.innerHTML=`
+      <img class="lazy" alt="${p.name}" width="800" height="600" loading="lazy" data-src="${svgPlaceholder(p.img)}">
+      <div class="pad">
+        <h3 style="margin:0 0 4px 0">${p.name}</h3>
+        <div class="meta"><span class="price">${money(p.price)}</span><span class="rating">⭐ ${p.rating.toFixed(1)}</span></div>
+        <div class="chips"><span class="chip">${p.cat}</span></div>
+        <div class="actions" style="margin-top:8px">
+          <button class="btn small" onclick="addToCart('${p.id}')">Add to Cart</button>
+          <button class="btn alt small" onclick="quickView('${p.id}')">Details</button>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+  renderPager(pages);
+  lazyLoadImages();
+}
+function renderPager(pages){
+  const pager=$("#pager"); pager.innerHTML="";
+  if(pages<=1){pager.classList.add("hide");return;} else pager.classList.remove("hide");
+  const prev=document.createElement("button"); prev.className="tab"; prev.textContent="‹ Prev"; prev.disabled=state.page===1; prev.onclick=()=>{state.page--; renderProducts()};
+  const next=document.createElement("button"); next.className="tab"; next.textContent="Next ›"; next.disabled=state.page===pages; next.onclick=()=>{state.page++; renderProducts()};
+  const info=document.createElement("span"); info.className="badge"; info.textContent=`Page ${state.page} / ${pages}`;
+  pager.append(prev,info,next);
+}
+function quickView(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  alert(`${p.name}\nCategory: ${p.cat}\nPrice: ${money(p.price)}\nRating: ${p.rating.toFixed(1)}\n\n(Modal-free demo)`);
+}
+/*! ====== LAZY IMAGES ====== */
+function lazyLoadImages(){
+  const imgs=$all("img.lazy");
+  if("IntersectionObserver" in window){
+    const io=new IntersectionObserver((entries,obs)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const img=e.target; img.src=img.dataset.src; img.classList.remove("lazy"); obs.unobserve(img);
+        }
+      });
+    },{rootMargin:"200px 0px"});
+    imgs.forEach(i=>io.observe(i));
+  }else{ // fallback
+    imgs.forEach(img=>{img.src=img.dataset.src; img.classList.remove("lazy");});
+  }
+}
+/*! ====== CART ====== */
+function loadCart(){try{return JSON.parse(localStorage.getItem("capstone_cart"))||{}}catch{return {}}}
+function saveCart(){localStorage.setItem("capstone_cart",JSON.stringify(state.cart)); updateCartCount();}
+function addToCart(id){
+  state.cart[id]=(state.cart[id]||0)+1; saveCart();
+  // toast (no reflow-heavy)
+  const t=document.createElement("div"); t.textContent="Added to cart"; Object.assign(t.style,{position:"fixed",inset:"auto 16px 16px auto",background:"#111826",color:"#fff",padding:"8px 12px",border:"1px solid #2a2d3a",borderRadius:"10px",zIndex:9999,opacity:"0.97"});
+  document.body.appendChild(t); setTimeout(()=>t.remove(),900);
+}
+function removeFromCart(id){delete state.cart[id]; saveCart(); renderCart();}
+function setQty(id,qty){
+  const q=Math.max(1,Math.min(99,parseInt(qty||"1",10))); state.cart[id]=q; saveCart(); renderCart();
+}
+function updateCartCount(){
+  const count=Object.values(state.cart).reduce((a,b)=>a+b,0);
+  $("#cartCount").textContent=count;
+}
+function renderCart(){
+  const box=$("#cartList"); box.innerHTML="";
+  const items=Object.entries(state.cart); if(!items.length){box.innerHTML='<p class="small" style="color:var(--sub)">Your cart is empty.</p>'; $("#cartTotal").textContent=money(0); return;}
+  let total=0;
+  items.forEach(([id,qty])=>{
+    const p=PRODUCTS.find(x=>x.id===id); if(!p) return;
+    const row=document.createElement("div"); row.className="card pad";
+    total+=p.price*qty;
+    row.innerHTML=`
+      <div class="cart-row">
+        <img alt="${p.name}" width="64" height="64" src="${svgPlaceholder(p.img)}">
+        <div><strong>${p.name}</strong><div class="small" style="color:var(--sub)">${p.cat} • ⭐ ${p.rating.toFixed(1)}</div></div>
+        <div class="qty" aria-label="Quantity">
+          <button aria-label="Decrease" onclick="setQty('${id}', (${qty}-1))">−</button>
+          <input inputmode="numeric" value="${qty}" onchange="setQty('${id}', this.value)">
+          <button aria-label="Increase" onclick="setQty('${id}', (${qty}+1))">+</button>
+        </div>
+        <div style="text-align:right">
+          <div>${money(p.price*qty)}</div>
+          <button class="tab small" onclick="removeFromCart('${id}')">Remove</button>
+        </div>
+      </div>`;
+    box.appendChild(row);
+  });
+  $("#cartTotal").textContent=money(total);
+}
+function checkout(){alert("This is a front-end demo. Hook this up to a backend/payment API in production.");}
+/*! ====== BLOG ====== */
+function renderPosts(){
+  const wrap=$("#posts"); wrap.innerHTML="";
+  BLOG.forEach((b,i)=>{
+    const c=document.createElement("article"); c.className="card post";
+    c.innerHTML=`<div class="pad"><h3>${b.title}</h3><p class="small" style="color:var(--sub)">Post #${i+1}</p><p>${b.t}</p></div>`;
+    wrap.appendChild(c);
+  });
+}
+/*! ====== PERF TWEAKS ====== */
+// Idle pre-render some routes
+if("requestIdleCallback" in window){
+  requestIdleCallback(()=>{ if(state.route!=="cart") renderCart(); if(state.route!=="blog") renderPosts(); },{timeout:1200});
+}else{ setTimeout(()=>{ if(state.route!=="cart") renderCart(); if(state.route!=="blog") renderPosts(); },800); }
+// Keep CPU cool on input (very cheap debounce)
+let tId; ["q","cat","sort"].forEach(id=>{
+  const el=()=>document.getElementById(id);
+  (el()?.oninput = el()?.onchange = function(){ clearTimeout(tId); tId=setTimeout(renderProducts,90); });
+});
+</script>
+</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Blog Posts</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0e0808;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 50px auto;
+      background: #5d5656;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #2c0303;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    textarea {
+      resize: none;
+      height: 120px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      background: #28a745;
+      color: #250808;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    footer {
+      text-align: center;
+      background: #2c3e50;
+      color: #080606;
+      padding: 12px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>My Blog Posts</h2>
+    <form>
+      <input type="text" placeholder="Enter blog title" required>
+      <input type="text" placeholder="Enter author name" required>
+      <textarea placeholder="Write your blog content..." required></textarea>
+      <button type="submit">Add Post</button>
+    </form>
+  </div>
+
+  <footer>
+    © 2025
+  </footer>
+
+</body>
+</html>
