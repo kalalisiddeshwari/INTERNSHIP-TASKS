@@ -3,138 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CSS & JS Advanced Tasks</title>
+  <title>Simple Webpage</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    nav { background: #222; padding: 12px; text-align: center; }
-    nav button {
-      background: #444; color: white; border: none;
-      padding: 10px 20px; margin: 5px; cursor: pointer;
-      border-radius: 5px;
-    }
-    nav button:hover { background: #666; }
-
-    section { display: none; padding: 20px; }
-    section.active { display: block; }
-
-    /* Responsive Design */
-    .container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-    .box {
-      background: #0077cc; color: white; padding: 30px;
-      border-radius: 10px; text-align: center;
-      font-size: 20px;
-    }
-    @media (max-width: 768px) {
-      .container { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .container { grid-template-columns: 1fr; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fafafa;
+      text-align: center;
     }
 
-    /* Quiz */
-    .quiz-container {
-      max-width: 500px; margin: auto; text-align: center;
-      border: 1px solid #ddd; padding: 20px; border-radius: 8px;
+    /* Header */
+    header {
+      background: purple;
+      color: white;
+      padding: 20px;
     }
-    .quiz-container button {
-      display: block; margin: 10px auto; padding: 10px;
-      width: 100%; border: none; background: #28a745;
-      color: white; border-radius: 5px; cursor: pointer;
-    }
-    .quiz-container button:hover { background: #218838; }
 
-    /* API Section */
-    .joke-box {
-      text-align: center; max-width: 600px; margin: auto;
+    header h1 {
+      margin: 0;
     }
-    .joke-box button {
-      background: #ff6600; border: none; padding: 10px 20px;
-      color: white; border-radius: 5px; cursor: pointer;
+
+    nav {
+      margin-top: 10px;
     }
-    .joke-box button:hover { background: #e65c00; }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    /* Sections */
+    section {
+      padding: 20px;
+    }
+
+    /* Gallery */
+    .gallery img {
+      width: 80px;
+      margin: 10px;
+    }
+
+    /* Contact */
+    .contact a {
+      color: blue;
+    }
+
+    button {
+      margin-top: 5px;
+      padding: 6px 12px;
+      border: 1px solid #333;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    footer {
+      background: #fdd;
+      padding: 10px;
+      margin-top: 20px;
+    }
+
+    /* To-Do List */
+    #todo-container {
+      background: #fff;
+      padding: 20px;
+      width: 300px;
+      margin: 20px auto;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    #taskList {
+      list-style: none;
+      padding: 0;
+    }
+
+    #taskList li {
+      background: #eee;
+      margin: 5px 0;
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 4px;
+    }
+
+    .delete-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
 
-  <nav>
-    <button onclick="showSection('responsive')">Responsive Design</button>
-    <button onclick="showSection('quiz')">Quiz</button>
-    <button onclick="showSection('api')">API Fetch</button>
-  </nav>
+  <!-- Header -->
+  <header>
+    <h1>Welcome to My Simple Webpage</h1>
+    <nav>
+      <a href="#about">About</a> |
+      <a href="#gallery">Gallery</a> |
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
 
-  <!-- Responsive Section -->
-  <section id="responsive" class="active">
-    <h2>Responsive Design Example</h2>
-    <div class="container">
-      <div class="box">Box 1</div>
-      <div class="box">Box 2</div>
-      <div class="box">Box 3</div>
-    </div>
-    <p>Resize the window to see layout change!</p>
+  <!-- About -->
+  <section id="about">
+    <h2>About This Page</h2>
+    <p>This is a simple webpage created to demonstrate the basics of HTML, CSS, and JavaScript. 
+       You will find headings, paragraphs, images, links, and some interactivity below.</p>
   </section>
 
-  <!-- Quiz Section -->
-  <section id="quiz">
-    <div class="quiz-container">
-      <h2>Simple Quiz</h2>
-      <p id="question"></p>
-      <div id="answers"></div>
-    </div>
+  <!-- Gallery -->
+  <section id="gallery" class="gallery">
+    <h2>Image Gallery</h2>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg" alt="HTML Logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/CSS3_logo_and_wordmark.svg" alt="CSS Logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png" alt="JS Logo">
   </section>
 
-  <!-- API Section -->
-  <section id="api">
-    <div class="joke-box">
-      <h2>Random Joke Generator 😂</h2>
-      <p id="joke">Click the button to load a joke!</p>
-      <button onclick="getJoke()">Get Joke</button>
-    </div>
+  <!-- Contact -->
+  <section id="contact" class="contact">
+    <h2>Contact</h2>
+    <p>Visit <a href="https://github.com/" target="_blank">GitHub</a> for more projects!</p>
+    <button onclick="alert('Thanks for visiting!')">Click Here</button>
   </section>
 
+  <!-- Footer -->
+  <footer>
+    © Simple Webpage
+  </footer>
+
+  <!-- To-Do List -->
+  <div id="todo-container">
+    <input type="text" id="taskInput" placeholder="Add a new task...">
+    <button id="addBtn">Add Task</button>
+    <ul id="taskList"></ul>
+  </div>
+
+  <!-- JavaScript -->
   <script>
-    // Section switch
-    function showSection(id) {
-      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-    }
+    // To-Do List functionality
+    document.getElementById("addBtn").onclick = function() {
+      let task = document.getElementById("taskInput").value.trim();
+      if(task !== "") {
+        let li = document.createElement("li");
+        li.textContent = task;
 
-    // Quiz
-    const quizData = [
-      { question: "Which language runs in a web browser?", answers: ["Python", "C++", "JavaScript"], correct: "JavaScript" },
-      { question: "What does CSS stand for?", answers: ["Cascading Style Sheets", "Colorful Style System", "Computer Style Syntax"], correct: "Cascading Style Sheets" },
-      { question: "What year was JavaScript created?", answers: ["1995", "2000", "1989"], correct: "1995" }
-    ];
-    let current = 0, score = 0;
-    const qElement = document.getElementById("question");
-    const aContainer = document.getElementById("answers");
+        let delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.className = "delete-btn";
+        delBtn.onclick = function() {
+          li.remove();
+        };
 
-    function loadQuiz() {
-      if (current < quizData.length) {
-        qElement.textContent = quizData[current].question;
-        aContainer.innerHTML = "";
-        quizData[current].answers.forEach(ans => {
-          const btn = document.createElement("button");
-          btn.textContent = ans;
-          btn.onclick = () => {
-            if (ans === quizData[current].correct) score++;
-            current++;
-            loadQuiz();
-          };
-          aContainer.appendChild(btn);
-        });
-      } else {
-        qElement.textContent = `Quiz Over! Your Score: ${score}/${quizData.length}`;
-        aContainer.innerHTML = "";
+        li.appendChild(delBtn);
+        document.getElementById("taskList").appendChild(li);
+        document.getElementById("taskInput").value = "";
       }
-    }
-    loadQuiz();
-
-    // API Fetch Joke
-    async function getJoke() {
-      let res = await fetch("https://official-joke-api.appspot.com/random_joke");
-      let data = await res.json();
-      document.getElementById("joke").textContent = `${data.setup} - ${data.punchline}`;
-    }
+    };
   </script>
+
 </body>
 </html>
