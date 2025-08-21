@@ -3,171 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Webpage</title>
+  <title>Portfolio + To-Do + Products</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fafafa;
-      text-align: center;
-    }
-
-    /* Header */
-    header {
-      background: purple;
-      color: white;
-      padding: 20px;
-    }
-
-    header h1 {
-      margin: 0;
-    }
-
-    nav {
-      margin-top: 10px;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 10px;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    /* Sections */
-    section {
-      padding: 20px;
-    }
-
-    /* Gallery */
-    .gallery img {
-      width: 80px;
-      margin: 10px;
-    }
-
-    /* Contact */
-    .contact a {
-      color: blue;
-    }
-
-    button {
-      margin-top: 5px;
-      padding: 6px 12px;
-      border: 1px solid #333;
-      cursor: pointer;
-    }
-
-    /* Footer */
-    footer {
-      background: #fdd;
-      padding: 10px;
-      margin-top: 20px;
-    }
-
-    /* To-Do List */
-    #todo-container {
-      background: #fff;
-      padding: 20px;
-      width: 300px;
-      margin: 20px auto;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
-    }
-
-    #taskList {
-      list-style: none;
-      padding: 0;
-    }
-
-    #taskList li {
-      background: #eee;
-      margin: 5px 0;
-      padding: 8px;
-      display: flex;
-      justify-content: space-between;
-      border-radius: 4px;
-    }
-
-    .delete-btn {
-      background: red;
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:Arial,sans-serif;line-height:1.6;}
+    header{background:#333;color:#fff;padding:10px;}
+    nav ul{list-style:none;display:flex;justify-content:center;}
+    nav ul li{margin:0 15px;}
+    nav ul li a{color:#fff;text-decoration:none;font-weight:bold;}
+    section{padding:20px;display:none;}
+    section.active{display:block;}
+    .hero{text-align:center;padding:40px;background:#eee;}
+    .btn{background:#333;color:#fff;padding:10px 20px;text-decoration:none;}
+    /* Contact form */
+    form input,form textarea{display:block;width:100%;margin:10px 0;padding:10px;}
+    form button{background:#333;color:#fff;padding:10px;border:none;cursor:pointer;}
+    /* To-Do */
+    #taskInput{padding:10px;width:70%;}
+    #todoSection button{padding:10px;}
+    #taskList{list-style:none;padding:0;}
+    #taskList li{background:#eee;margin:5px 0;padding:10px;display:flex;justify-content:space-between;}
+    /* Products */
+    .controls{margin-bottom:20px;}
+    .product{border:1px solid #ccc;padding:10px;margin:10px;display:inline-block;width:200px;}
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Navigation -->
   <header>
-    <h1>Welcome to My Simple Webpage</h1>
     <nav>
-      <a href="#about">About</a> |
-      <a href="#gallery">Gallery</a> |
-      <a href="#contact">Contact</a>
+      <ul>
+        <li><a href="#" onclick="showSection('home')">Home</a></li>
+        <li><a href="#" onclick="showSection('about')">About</a></li>
+        <li><a href="#" onclick="showSection('projects')">Projects</a></li>
+        <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+        <li><a href="#" onclick="showSection('todoSection')">To-Do</a></li>
+        <li><a href="#" onclick="showSection('productsSection')">Products</a></li>
+      </ul>
     </nav>
   </header>
 
-  <!-- About -->
-  <section id="about">
-    <h2>About This Page</h2>
-    <p>This is a simple webpage created to demonstrate the basics of HTML, CSS, and JavaScript. 
-       You will find headings, paragraphs, images, links, and some interactivity below.</p>
+  <!-- Home -->
+  <section id="home" class="active">
+    <div class="hero">
+      <h2>Welcome! I'm Siddeshwari</h2>
+      <p>Computer Science Student | Data Science</p>
+      <a href="#" onclick="showSection('projects')" class="btn">View My Work</a>
+    </div>
   </section>
 
-  <!-- Gallery -->
-  <section id="gallery" class="gallery">
-    <h2>Image Gallery</h2>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg" alt="HTML Logo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/CSS3_logo_and_wordmark.svg" alt="CSS Logo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png" alt="JS Logo">
+  <!-- About -->
+  <section id="about">
+    <h2>About Me</h2>
+    <p>I am a Computer Science Engineering student specializing in Data Science with CGPA 8.7.
+       I completed Diploma with 9.6 GPA and School with 10 GPA.</p>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <h2>My Projects</h2>
+    <ul>
+      <li>✔ To-Do App with LocalStorage</li>
+      <li>✔ Product Listing with Filtering & Sorting</li>
+      <li>✔ Portfolio Website</li>
+    </ul>
   </section>
 
   <!-- Contact -->
-  <section id="contact" class="contact">
-    <h2>Contact</h2>
-    <p>Visit <a href="https://github.com/" target="_blank">GitHub</a> for more projects!</p>
-    <button onclick="alert('Thanks for visiting!')">Click Here</button>
+  <section id="contact">
+    <h2>Contact Me</h2>
+    <form>
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <textarea placeholder="Your Message"></textarea>
+      <button type="submit">Send</button>
+    </form>
   </section>
 
-  <!-- Footer -->
-  <footer>
-    © Simple Webpage
-  </footer>
-
-  <!-- To-Do List -->
-  <div id="todo-container">
-    <input type="text" id="taskInput" placeholder="Add a new task...">
-    <button id="addBtn">Add Task</button>
+  <!-- To-Do App -->
+  <section id="todoSection">
+    <h2>To-Do List</h2>
+    <input type="text" id="taskInput" placeholder="Enter a task">
+    <button onclick="addTask()">Add</button>
     <ul id="taskList"></ul>
-  </div>
+  </section>
+
+  <!-- Products -->
+  <section id="productsSection">
+    <h2>Product Listing</h2>
+    <div class="controls">
+      <label>Filter by Category:
+        <select id="categoryFilter" onchange="renderProducts()">
+          <option value="all">All</option>
+          <option value="electronics">Electronics</option>
+          <option value="clothing">Clothing</option>
+        </select>
+      </label>
+      <label>Sort by:
+        <select id="sortOption" onchange="renderProducts()">
+          <option value="default">Default</option>
+          <option value="price">Price (Low-High)</option>
+          <option value="rating">Rating (High-Low)</option>
+        </select>
+      </label>
+    </div>
+    <div id="productList"></div>
+  </section>
 
   <!-- JavaScript -->
   <script>
-    // To-Do List functionality
-    document.getElementById("addBtn").onclick = function() {
-      let task = document.getElementById("taskInput").value.trim();
-      if(task !== "") {
-        let li = document.createElement("li");
-        li.textContent = task;
+    // Navigation
+    function showSection(id){
+      document.querySelectorAll("section").forEach(sec=>sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
 
-        let delBtn = document.createElement("button");
-        delBtn.textContent = "Delete";
-        delBtn.className = "delete-btn";
-        delBtn.onclick = function() {
-          li.remove();
-        };
-
-        li.appendChild(delBtn);
-        document.getElementById("taskList").appendChild(li);
-        document.getElementById("taskInput").value = "";
+    // To-Do App
+    let tasks=JSON.parse(localStorage.getItem("tasks"))||[];
+    function renderTasks(){
+      const list=document.getElementById("taskList");
+      list.innerHTML="";
+      tasks.forEach((task,i)=>{
+        list.innerHTML+=`<li>${task} <button onclick="deleteTask(${i})">❌</button></li>`;
+      });
+      localStorage.setItem("tasks",JSON.stringify(tasks));
+    }
+    function addTask(){
+      const input=document.getElementById("taskInput");
+      if(input.value.trim()!==""){
+        tasks.push(input.value);
+        input.value="";
+        renderTasks();
       }
-    };
+    }
+    function deleteTask(i){
+      tasks.splice(i,1);
+      renderTasks();
+    }
+    renderTasks();
+
+    // Products
+    const products=[
+      {name:"Laptop",category:"electronics",price:800,rating:4.5},
+      {name:"T-Shirt",category:"clothing",price:20,rating:4.2},
+      {name:"Phone",category:"electronics",price:500,rating:4.7},
+      {name:"Jeans",category:"clothing",price:40,rating:4.0}
+    ];
+    function renderProducts(){
+      const cat=document.getElementById("categoryFilter").value;
+      const sort=document.getElementById("sortOption").value;
+      let filtered=products.filter(p=>cat==="all"||p.category===cat);
+      if(sort==="price") filtered.sort((a,b)=>a.price-b.price);
+      if(sort==="rating") filtered.sort((a,b)=>b.rating-a.rating);
+      const list=document.getElementById("productList");
+      list.innerHTML="";
+      filtered.forEach(p=>{
+        list.innerHTML+=`
+          <div class="product">
+            <h3>${p.name}</h3>
+            <p>Category: ${p.category}</p>
+            <p>Price: $${p.price}</p>
+            <p>Rating: ${p.rating}</p>
+          </div>`;
+      });
+    }
+    renderProducts();
   </script>
 
 </body>
